@@ -13,7 +13,5 @@ CHIP Inc16 {
     OUT out[16];
 
     PARTS:
-    Not16(in=in,out=flip);
-    Add16(a=flip,b=true,out=neg);
-    Not16(in=neg,out=out);
+    Add16(a=in,b[0]=true,out=out);
 }
