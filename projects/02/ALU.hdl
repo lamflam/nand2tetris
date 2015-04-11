@@ -52,5 +52,9 @@ CHIP ALU {
     And16(a=x2,b=y2,out=and);
     Mux16(a=and,b=sum,sel=f,out=o1);
     Not16(in=o1,out=no1);
-    Mux16(a=o1,b=no1,sel=no,out=out);
+    Mux16(a=o1,b=no1,sel=no,out=out,out[15]=ng,out[0..7]=lowo,out[8..15]=higho);
+    Or8Way(in=lowo,out=lowr);
+    Or8Way(in=higho,out=highr);
+    Or(a=lowr,b=highr,out=r2);
+    Not(in=r2,out=zr);
 }
