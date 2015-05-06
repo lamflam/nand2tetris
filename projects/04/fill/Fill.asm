@@ -46,11 +46,11 @@ M=D
 	D=A+1
 	@pixel
 	M=D
-  @24575
-  D=D-A
+  @end
+  D=D-M
   @RESET
   D;JEQ
-	@GETINPUT
+	@LOOP
 	0;JMP
 
 (RESET)
