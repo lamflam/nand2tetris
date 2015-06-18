@@ -39,5 +39,61 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    
+    // A or C instruction
+    Not(in=instruction[15],out=Ains);
+
+
+    //
+    // Registers
+    //
+
+    // ARegister
+    // Fed by instruction and ALU output
+    // The A instruction or 'd1' bit mean store this value in the register
+    Mux16(a[0..14]=instruction[0..14],b=aluO,sel=instruction[15],out=inA);
+    Or(a=Ains,b=instruction[5],out=loadA);
+    ARegister(in=inA,load=loadA,out[0..14]=regA,out[0..14]=addressM);
+
+    // The D register
+    // Fed by ALU output
+    // The 'd2' bit means store this value in the register
+    And(a=instruction[15],b=instruction[4],out=loadD);
+    DRegister(in=aluO,load=loadD,out=regD);
+
+    // If this is a C instruction and bit 'd3' is set
+    // then set writeM
+    And(a=instruction[15],b=instruction[3],out=writeM);
+
+
+
+    // The program counter
+    // Fed by the A register
+    // Use the control bits form the ALU to check if output
+    // > or < zero, and compare with the jump flags.
+    Or(a=neg,b=zer,out=ngrt);
+    Not(in=ngrt,out=grt);
+    And(a=grt,b=instruction[0],out=gtj);
+    And(a=zer,b=instruction[1],out=eqj);
+    And(a=neg,b=instruction[2],out=ltj);
+    Or(a=gtj,b=eqj,out=tjmp1);
+    Or(a=tjmp1,b=ltj,out=tjmp2);
+    And(a=instruction[15],b=tjmp2,out=jmp);
+    Not(in=jmp,out=inc);
+    PC(in[0..14]=regA,reset=reset,load=jmp,inc=inc,out[0..14]=pc);
+
+
+    //
+    // ALU logic
+    //
+
+    // Select whether A or M gets fed into the ALU
+    // Fed by A register and previous value of M, selected by the 'a' bit
+    Mux16(a[0..14]=regA,b=inM,sel=instruction[12],out=am);
+
+    // ALU
+    // Fed by D register and either A or M depending the 'am' from Mux chip above
+    ALU(x=regD,y=am,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6],out=aluO,out=outM,zr=zer,ng=neg);
+
 }
