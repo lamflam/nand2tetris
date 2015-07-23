@@ -105,17 +105,3 @@ Parser.prototype.readLine = function() {
 Parser.prototype.isComment = function(line) { 
   return line && !!line.match(/^\/\/.*$/);
 };
-
-Parser.prototype.parse = function() {
-
-  while (this.hasMoreCommands()) {
-    this.advance();
-    console.log('Command: ' + this._command);
-    console.log('Command Type: '  + this.commandType());
-    console.log('Symbol: ' + this.symbol());
-    console.log('DEST: ' + this.dest());
-    console.log('COMP: ' + this.comp());
-    console.log('JUMP: ' + this.jump());
-    console.log(' ');
-  }
-};
